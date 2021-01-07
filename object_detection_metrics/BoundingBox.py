@@ -1,4 +1,4 @@
-from utils import *
+from object_detection_metrics.utils import *
 
 
 class BoundingBox:

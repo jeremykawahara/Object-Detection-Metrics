@@ -1,5 +1,5 @@
-from BoundingBox import *
-from utils import *
+from object_detection_metrics.BoundingBox import *
+from object_detection_metrics.utils import *
 
 
 class BoundingBoxes:
