@@ -15,8 +15,8 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 
-from BoundingBox import *
-from BoundingBoxes import *
+from object_detection_metrics.BoundingBox import *
+from object_detection_metrics.BoundingBoxes import *
 from object_detection_metrics.utils import *
 
 
