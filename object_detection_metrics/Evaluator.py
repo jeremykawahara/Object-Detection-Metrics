@@ -24,7 +24,9 @@ class Evaluator:
     def GetPascalVOCMetrics(self,
                             boundingboxes,
                             IOUThreshold=0.5,
-                            method=MethodAveragePrecision.EveryPointInterpolation):
+                            method=MethodAveragePrecision.EveryPointInterpolation,
+                            decision_func=None,
+                            ):
         """Get the metrics used by the VOC Pascal 2012 challenge.
         Get
         Args:
@@ -49,6 +51,9 @@ class Evaluator:
             dict['total TP']: total number of True Positive detections;
             dict['total FP']: total number of False Positive detections;
         """
+        if decision_func is None:
+            decision_func = Evaluator.iou
+
         ret = []  # list containing metrics (precision, recall, average precision) of each class
         # List with all ground truths (Ex: [imageName,class,confidence=1, (bb coordinates XYX2Y2)])
         groundTruths = []
@@ -101,6 +106,7 @@ class Evaluator:
                 # Find ground truth image
                 gt = [gt for gt in gts if gt[0] == dects[d][0]]
                 iouMax = sys.float_info.min
+                jmax = None
                 for j in range(len(gt)):
                     # print('Ground truth gt => %s' % (gt[j][3],))
                     iou = Evaluator.iou(dects[d][3], gt[j][3])
@@ -108,7 +114,7 @@ class Evaluator:
                         iouMax = iou
                         jmax = j
                 # Assign detection as true positive/don't care/false positive
-                if iouMax >= IOUThreshold:
+                if jmax is not None and (iouMax >= IOUThreshold) & (decision_func(dects[d][3], gt[jmax][3])):
                     if det[dects[d][0]][jmax] == 0:
                         TP[d] = 1  # count as true positive
                         det[dects[d][0]][jmax] = 1  # flag as already 'seen'
