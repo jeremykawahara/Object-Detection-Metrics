@@ -52,7 +52,7 @@ class Evaluator:
             dict['total FP']: total number of False Positive detections;
         """
         if decision_func is None:
-            decision_func = Evaluator.iou
+            decision_func = lambda x, y: Evaluator.iou(x, y) > IOUThreshold
 
         ret = []  # list containing metrics (precision, recall, average precision) of each class
         # List with all ground truths (Ex: [imageName,class,confidence=1, (bb coordinates XYX2Y2)])
@@ -114,7 +114,8 @@ class Evaluator:
                         iouMax = iou
                         jmax = j
                 # Assign detection as true positive/don't care/false positive
-                if jmax is not None and (iouMax >= IOUThreshold) & (decision_func(dects[d][3], gt[jmax][3])):
+                # if `decision_func` is not specified, defaults to: (iouMax >= IOUThreshold)
+                if jmax is not None and (decision_func(dects[d][3], gt[jmax][3])):
                     if det[dects[d][0]][jmax] == 0:
                         TP[d] = 1  # count as true positive
                         det[dects[d][0]][jmax] = 1  # flag as already 'seen'
